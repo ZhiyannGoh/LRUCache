@@ -1,30 +1,33 @@
-package business;
+package impl;
 
-import model.LRUCache;
+import business.NodeOperation;
+import model.HashMapCache;
 import model.Node;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
-public class CacheOperation {
+public class HashMapImpl{
 
     private NodeOperation nodeOperation = new NodeOperation();
 
-    public void printCache(LRUCache cache) {
+    public void printCache(Object o) {
+        HashMapCache cache = (HashMapCache) o;
         nodeOperation.printNodeList(cache.getHead().getNext());
     }
 
-    public void assignCache(LRUCache cache, List<Integer> node) {
+    public void assignCache(Object o1, Object o2) {
+        HashMapCache cache = (HashMapCache) o1;
+        List<Integer> node = (List<Integer>) o2;
 
         node.forEach(i -> {
-            Node currNode = new Node(i);
+            Node currNode = Node.builder().key(i).build();
             if (cache.getCacheMap().containsKey(currNode.getKey())) {
                 if (cache.getHead().getNext().getKey() == currNode.getKey()) {
-                    Node prevHead = nodeOperation.setNewHead(cache.getHead());
+                    Node prevHead = nodeOperation.setNewHead(cache.getHead(),currNode);
                     nodeOperation.setLinkNull(prevHead);
                     nodeOperation.setNewTail(cache.getTail(), prevHead);
-                } else if (cache.getTail().getKey() != currNode.getKey()) {
+                } else if (cache.getTail().getPrev().getKey() != currNode.getKey()) {
                     Node midNode = cache.getCacheMap().get(currNode.getKey());
                     nodeOperation.removeMidLink(midNode);
                     nodeOperation.setLinkNull(currNode);
@@ -32,23 +35,27 @@ public class CacheOperation {
                 }
             } else {
                 if (cache.getCacheAvailable() > 0 && cache.getCacheSize() >= cache.getCacheAvailable()) {
-                    insertCache(cache, cache.getCacheMap(), currNode);
-                    printCache(cache);
+                    insertCache(cache, currNode);
                 } else {
-                    freeCache(cache, cache.getCacheMap());
-                    insertCache(cache, cache.getCacheMap(), currNode);
+                    freeCache(cache);
+                    insertCache(cache, currNode);
                 }
             }
         });
     }
 
-    private void freeCache(LRUCache cache, Map<Integer, Node> currCacheItem) {
-        Node prevHead = nodeOperation.setNewHead(cache.getHead());
+    public void freeCache(Object o) {
+        HashMapCache cache = (HashMapCache) o;
+        Map<Integer,Node> currCacheItem = cache.getCacheMap();
+        Node prevHead = nodeOperation.setNewHead(cache.getHead(),new Node());
         currCacheItem.remove(prevHead.getKey());
         cache.incrementCacheAvailable();
     }
 
-    private void insertCache(LRUCache cache, Map<Integer, Node> currCacheItem, Node newNode) {
+    public void insertCache(Object o1, Object o2) {
+        HashMapCache cache = (HashMapCache) o1;
+        Map<Integer,Node> currCacheItem = cache.getCacheMap();
+        Node newNode = (Node) o2;
         if (cache.getHead().getNext() == null) {
             cache.getHead().setNext(newNode);
         }
@@ -56,5 +63,4 @@ public class CacheOperation {
         currCacheItem.put(newNode.getKey(), newNode);
         cache.decrementCacheAvailable();
     }
-
 }
