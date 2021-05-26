@@ -5,11 +5,11 @@ import model.Node;
 import java.util.List;
 
 public interface CacheOperation {
-    void printCache();
 
-    void assignCache(List<Integer> elements);
+    void assignCache(List<Integer> nodes);
 
     void freeCache();
 
-    void insertCache(Node newnode);
+    String printCacheInformation();
+
 }

@@ -4,54 +4,60 @@ import model.Node;
 
 public class NodeOperation {
 
+    public Node makeNewHead(Node oldHead) {
+        if (oldHead != null) {
+            Node newHead = oldHead.getNextNode();
+            if (newHead != null) {
+                newHead.setPrevNode(null);
+                return newHead;
+            } else
+                return null;
+        } else
+            throw new NullPointerException();
+    }
+
+    public Node setNextAndPrevNull(Node n) {
+        if (n != null) {
+            n.setNextNode(null);
+            n.setPrevNode(null);
+            return n;
+        } else
+            throw new NullPointerException();
+    }
+
+    public void insertToTail(Node newTail, Node oldTail) {
+        if (oldTail != null && newTail != null) {
+            oldTail.setNextNode(newTail);
+            newTail.setPrevNode(oldTail);
+        }
+    }
+
+    public void makeNewMid(Node midNode) {
+        if (midNode != null && (midNode.getPrevNode() != null && midNode.getNextNode() != null)) {
+            Node prevNode = midNode.getPrevNode();
+            Node nextNode = midNode.getNextNode();
+            prevNode.setNextNode(nextNode);
+            nextNode.setPrevNode(prevNode);
+        }
+        else
+            throw new NullPointerException();
+    }
+
+    public void setNextNull(Node n) {
+        n.setNextNode(null);
+    }
+
     public String printNodeList(Node n) {
         StringBuilder sb = new StringBuilder();
         if (n != null) {
-            while (n != null) {
-                sb.append(n.getKey() + " -> ");
-                n = n.getNext();
+            Node looper = n;
+            while (looper != null) {
+                sb.append(looper.getKey() + "->");
+                looper = looper.getNextNode();
             }
             sb.append("null");
-        }
+        } else
+            sb.append("Cache is Empty");
         return sb.toString();
-    }
-
-    public void setNewTail(Node tailRef, Node currNode) {
-        Node tailNode;
-        if (tailRef.getPrev() != null) {
-            tailNode = tailRef.getPrev();
-            tailNode.setNext(currNode);
-            currNode.setPrev(tailNode);
-            tailRef.setPrev(currNode);
-        } else
-            tailRef.setPrev(currNode);
-    }
-
-    public Node setNewHead(Node headRef, Node currNode) {
-        Node oldHeadNode = null;
-        if (headRef.getNext() != null) {
-            oldHeadNode = headRef.getNext();
-            headRef.setNext(oldHeadNode.getNext());
-        } else if (currNode != null) {
-            headRef.setNext(currNode);
-        } else {
-            throw new NullPointerException();
-        }
-        return oldHeadNode;
-    }
-
-    public void setLinkNull(Node prevHead) {
-        prevHead.setNext(null);
-        prevHead.setPrev(null);
-    }
-
-    public void removeMidLink(Node midNode) {
-        Node prevNode = midNode.getPrev();
-        Node nextNode = midNode.getNext();
-        if (prevNode != null && nextNode != null) {
-            nextNode.setPrev(prevNode);
-            prevNode.setNext(nextNode);
-        } else
-            throw new NullPointerException();
     }
 }
